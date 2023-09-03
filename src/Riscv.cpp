@@ -6,4 +6,6 @@
 #include "../lib/console.h"
 #include "../lib/hw.h"
 
-
+void Riscv::handleSupervisorTrap(){
+    uint64
+}

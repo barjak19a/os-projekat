@@ -81,6 +81,7 @@ public:
     static void w_sstatus(uint64 sstatus);
 
 private:
+    static void handleSupervisorTrap();
 
 };
 
@@ -176,7 +177,6 @@ inline void Riscv::w_sstatus(uint64 sstatus)
     __asm__ volatile ("csrw sstatus, %[sstatus]" : : [sstatus] "r"(sstatus));
 }
 
-};
 
 
 #endif //PROJECT_BASE_V1_1_RISCV_HPP
