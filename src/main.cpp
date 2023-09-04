@@ -1,46 +1,26 @@
 #include "../lib/hw.h"
 #include "../lib/console.h"
+#include "../h/syscall_c.hpp"
 #include "../h/MemoryAllocator.hpp"
+#include "../h/riscv.hpp"
 
-void checkNullptr(void* p) {
-    static int x = 0;
-    if(p == nullptr) {
-        __putc('?');
-        __putc('0' + x);
-    }
-    x++;
-}
 
-void checkStatus(int status) {
-    static int y = 0;
-    if(status) {
-        __putc('0' + y);
-        __putc('?');
-    }
-    y++;
-}
 
 int main() {
-    int velicinaZaglavlja = sizeof(size_t); // meni je ovoliko
     MemoryAllocator::initialize();
-    int *p1 = (int*)MemoryAllocator::mem_alloc(15*sizeof(int)); // trebalo bi da predje jedan blok od 64
-    checkNullptr(p1);
-    int *p2 = (int*)MemoryAllocator::mem_alloc(30*sizeof(int));
-    checkNullptr(p2);
+    riscv::w_stvec((uint64)&riscv::supervisorTrap);
+    //riscv::ms_sstatus(riscv::SSTATUS_SIE);
 
-    int *p3 = (int*)MemoryAllocator::mem_alloc(30*sizeof(int));
-    checkNullptr(p3);
+    __asm__ volatile ("mv a0, %0" : : "r" (45));
+    __asm__ volatile ("ecall");
 
-    checkStatus(MemoryAllocator::mem_free(p1));
-    checkStatus(MemoryAllocator::mem_free(p3));
-    checkStatus(MemoryAllocator::mem_free(p2)); // p2 treba da se spoji sa p1 i p3
+    void* mojBlok = mem_alloc(1024);
+    for(int i =0; i< 1999; i++){
 
-    const size_t maxMemorija = (((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR - velicinaZaglavlja)/MEM_BLOCK_SIZE - 1)*MEM_BLOCK_SIZE ;
-    int *celaMemorija = (int*)MemoryAllocator::mem_alloc(maxMemorija);
-    checkNullptr(celaMemorija);
-
-    checkStatus(MemoryAllocator::mem_free(celaMemorija));
-
+    }
+    mem_free(mojBlok);
+    __putc('k');
+    __putc('\n');
 
     return 0;
 }

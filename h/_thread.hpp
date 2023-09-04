@@ -6,7 +6,9 @@
 #define PROJECT_BASE_V1_1__THREAD_HPP
 
 #include "../lib/hw.h"
+#include "MemoryAllocator.hpp"
 #include "../h/scheduler.hpp"
+#include "../h/syscall_c.hpp"
 
 void * operator new[](size_t n);
 
@@ -27,6 +29,8 @@ public:
     ~_thread() { delete[] stack; }
 
 private:
+
+    friend class riscv;
 
     _thread(Body body, void *args) {
         this->body = body;

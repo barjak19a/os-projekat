@@ -1,0 +1,187 @@
+GAS LISTING /tmp/ccDMx18I.s 			page 1
+
+
+   1              		.file	"_thread.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_Znam
+   9              	_Znam:
+  10              	.LFB30:
+  11              		.file 1 "src/_thread.cpp"
+   1:src/_thread.cpp **** //
+   2:src/_thread.cpp **** // Created by os on 9/3/23.
+   3:src/_thread.cpp **** //
+   4:src/_thread.cpp **** 
+   5:src/_thread.cpp **** #include "../h/_thread.hpp"
+   6:src/_thread.cpp **** #include "../h/MemoryAllocator.hpp"
+   7:src/_thread.cpp **** #include "../h/riscv.hpp"
+   8:src/_thread.cpp **** 
+   9:src/_thread.cpp **** void* operator new[](size_t n) {
+  12              		.loc 1 9 32
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15 0000 130101FF 		addi	sp,sp,-16
+  16              		.cfi_def_cfa_offset 16
+  17 0004 23341100 		sd	ra,8(sp)
+  18 0008 23308100 		sd	s0,0(sp)
+  19              		.cfi_offset 1, -8
+  20              		.cfi_offset 8, -16
+  21 000c 13040101 		addi	s0,sp,16
+  22              		.cfi_def_cfa 8, 0
+  10:src/_thread.cpp ****     return MemoryAllocator::mem_alloc(n);
+  23              		.loc 1 10 5
+  24              		.loc 1 10 38 is_stmt 0
+  25 0010 97000000 		call	_ZN15MemoryAllocator9mem_allocEm@plt
+  25      E7800000 
+  26              	.LVL1:
+  11:src/_thread.cpp **** }
+  27              		.loc 1 11 1
+  28 0018 83308100 		ld	ra,8(sp)
+  29              		.cfi_restore 1
+  30 001c 03340100 		ld	s0,0(sp)
+  31              		.cfi_restore 8
+  32              		.cfi_def_cfa 2, 16
+  33 0020 13010101 		addi	sp,sp,16
+  34              		.cfi_def_cfa_offset 0
+  35 0024 67800000 		jr	ra
+  36              		.cfi_endproc
+  37              	.LFE30:
+  39              		.align	2
+  40              		.globl	_ZdaPv
+  42              	_ZdaPv:
+  43              	.LFB31:
+  12:src/_thread.cpp **** 
+  13:src/_thread.cpp **** void operator delete[](void *p)  {
+  44              		.loc 1 13 34 is_stmt 1
+  45              		.cfi_startproc
+  46              	.LVL2:
+GAS LISTING /tmp/ccDMx18I.s 			page 2
+
+
+  47 0028 130101FF 		addi	sp,sp,-16
+  48              		.cfi_def_cfa_offset 16
+  49 002c 23341100 		sd	ra,8(sp)
+  50 0030 23308100 		sd	s0,0(sp)
+  51              		.cfi_offset 1, -8
+  52              		.cfi_offset 8, -16
+  53 0034 13040101 		addi	s0,sp,16
+  54              		.cfi_def_cfa 8, 0
+  14:src/_thread.cpp ****     MemoryAllocator::mem_free(p);
+  55              		.loc 1 14 5
+  56              		.loc 1 14 30 is_stmt 0
+  57 0038 97000000 		call	_ZN15MemoryAllocator8mem_freeEPv@plt
+  57      E7800000 
+  58              	.LVL3:
+  15:src/_thread.cpp **** }
+  59              		.loc 1 15 1
+  60 0040 83308100 		ld	ra,8(sp)
+  61              		.cfi_restore 1
+  62 0044 03340100 		ld	s0,0(sp)
+  63              		.cfi_restore 8
+  64              		.cfi_def_cfa 2, 16
+  65 0048 13010101 		addi	sp,sp,16
+  66              		.cfi_def_cfa_offset 0
+  67 004c 67800000 		jr	ra
+  68              		.cfi_endproc
+  69              	.LFE31:
+  71              	.Letext0:
+  72              		.file 2 "src/../h/../lib/hw.h"
+  73              		.file 3 "src/../h/MemoryAllocator.hpp"
+GAS LISTING /tmp/ccDMx18I.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 _thread.cpp
+     /tmp/ccDMx18I.s:9      .text:0000000000000000 _Znam
+     /tmp/ccDMx18I.s:13     .text:0000000000000000 .L0 
+     /tmp/ccDMx18I.s:15     .text:0000000000000000 .L0 
+     /tmp/ccDMx18I.s:16     .text:0000000000000004 .L0 
+     /tmp/ccDMx18I.s:19     .text:000000000000000c .L0 
+     /tmp/ccDMx18I.s:20     .text:000000000000000c .L0 
+     /tmp/ccDMx18I.s:22     .text:0000000000000010 .L0 
+     /tmp/ccDMx18I.s:24     .text:0000000000000010 .L0 
+     /tmp/ccDMx18I.s:25     .text:0000000000000010 .L0 
+     /tmp/ccDMx18I.s:28     .text:0000000000000018 .L0 
+     /tmp/ccDMx18I.s:29     .text:000000000000001c .L0 
+     /tmp/ccDMx18I.s:31     .text:0000000000000020 .L0 
+     /tmp/ccDMx18I.s:32     .text:0000000000000020 .L0 
+     /tmp/ccDMx18I.s:34     .text:0000000000000024 .L0 
+     /tmp/ccDMx18I.s:36     .text:0000000000000028 .L0 
+     /tmp/ccDMx18I.s:42     .text:0000000000000028 _ZdaPv
+     /tmp/ccDMx18I.s:45     .text:0000000000000028 .L0 
+     /tmp/ccDMx18I.s:47     .text:0000000000000028 .L0 
+     /tmp/ccDMx18I.s:48     .text:000000000000002c .L0 
+     /tmp/ccDMx18I.s:51     .text:0000000000000034 .L0 
+     /tmp/ccDMx18I.s:52     .text:0000000000000034 .L0 
+     /tmp/ccDMx18I.s:54     .text:0000000000000038 .L0 
+     /tmp/ccDMx18I.s:56     .text:0000000000000038 .L0 
+     /tmp/ccDMx18I.s:57     .text:0000000000000038 .L0 
+     /tmp/ccDMx18I.s:60     .text:0000000000000040 .L0 
+     /tmp/ccDMx18I.s:61     .text:0000000000000044 .L0 
+     /tmp/ccDMx18I.s:63     .text:0000000000000048 .L0 
+     /tmp/ccDMx18I.s:64     .text:0000000000000048 .L0 
+     /tmp/ccDMx18I.s:66     .text:000000000000004c .L0 
+     /tmp/ccDMx18I.s:68     .text:0000000000000050 .L0 
+     /tmp/ccDMx18I.s:74     .text:0000000000000050 .L0 
+     /tmp/ccDMx18I.s:347    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccDMx18I.s:801    .debug_str:00000000000001c3 .LASF30
+     /tmp/ccDMx18I.s:809    .debug_str:00000000000002b4 .LASF31
+     /tmp/ccDMx18I.s:753    .debug_str:000000000000003c .LASF32
+     /tmp/ccDMx18I.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccDMx18I.s:71     .text:0000000000000050 .Letext0
+     /tmp/ccDMx18I.s:741    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccDMx18I.s:777    .debug_str:0000000000000110 .LASF0
+     /tmp/ccDMx18I.s:781    .debug_str:0000000000000126 .LASF1
+     /tmp/ccDMx18I.s:773    .debug_str:00000000000000ef .LASF2
+     /tmp/ccDMx18I.s:765    .debug_str:00000000000000ba .LASF4
+     /tmp/ccDMx18I.s:793    .debug_str:0000000000000181 .LASF3
+     /tmp/ccDMx18I.s:747    .debug_str:0000000000000019 .LASF5
+     /tmp/ccDMx18I.s:783    .debug_str:0000000000000139 .LASF6
+     /tmp/ccDMx18I.s:775    .debug_str:00000000000000fd .LASF7
+     /tmp/ccDMx18I.s:807    .debug_str:00000000000002a4 .LASF8
+     /tmp/ccDMx18I.s:763    .debug_str:00000000000000ac .LASF9
+     /tmp/ccDMx18I.s:785    .debug_str:000000000000014c .LASF10
+     /tmp/ccDMx18I.s:803    .debug_str:0000000000000287 .LASF11
+     /tmp/ccDMx18I.s:749    .debug_str:0000000000000020 .LASF12
+     /tmp/ccDMx18I.s:743    .debug_str:0000000000000000 .LASF13
+     /tmp/ccDMx18I.s:751    .debug_str:0000000000000030 .LASF14
+     /tmp/ccDMx18I.s:789    .debug_str:0000000000000164 .LASF15
+     /tmp/ccDMx18I.s:755    .debug_str:000000000000005f .LASF16
+GAS LISTING /tmp/ccDMx18I.s 			page 4
+
+
+     /tmp/ccDMx18I.s:779    .debug_str:000000000000011d .LASF33
+     /tmp/ccDMx18I.s:799    .debug_str:00000000000001be .LASF17
+     /tmp/ccDMx18I.s:811    .debug_str:00000000000002c4 .LASF18
+     /tmp/ccDMx18I.s:815    .debug_str:00000000000002ec .LASF19
+     /tmp/ccDMx18I.s:769    .debug_str:00000000000000d4 .LASF34
+     /tmp/ccDMx18I.s:795    .debug_str:0000000000000193 .LASF20
+     /tmp/ccDMx18I.s:797    .debug_str:000000000000019d .LASF22
+     /tmp/ccDMx18I.s:787    .debug_str:000000000000015b .LASF21
+     /tmp/ccDMx18I.s:761    .debug_str:000000000000008b .LASF23
+     /tmp/ccDMx18I.s:771    .debug_str:00000000000000e4 .LASF35
+     /tmp/ccDMx18I.s:813    .debug_str:00000000000002c9 .LASF36
+     /tmp/ccDMx18I.s:745    .debug_str:0000000000000010 .LASF24
+     /tmp/ccDMx18I.s:805    .debug_str:0000000000000296 .LASF25
+     /tmp/ccDMx18I.s:767    .debug_str:00000000000000c1 .LASF26
+     /tmp/ccDMx18I.s:791    .debug_str:000000000000017a .LASF28
+     /tmp/ccDMx18I.s:43     .text:0000000000000028 .LFB31
+     /tmp/ccDMx18I.s:69     .text:0000000000000050 .LFE31
+     /tmp/ccDMx18I.s:700    .debug_loc:0000000000000000 .LLST1
+     /tmp/ccDMx18I.s:58     .text:0000000000000040 .LVL3
+     /tmp/ccDMx18I.s:759    .debug_str:000000000000007b .LASF27
+     /tmp/ccDMx18I.s:757    .debug_str:0000000000000075 .LASF29
+     /tmp/ccDMx18I.s:10     .text:0000000000000000 .LFB30
+     /tmp/ccDMx18I.s:37     .text:0000000000000028 .LFE30
+     /tmp/ccDMx18I.s:714    .debug_loc:0000000000000039 .LLST0
+     /tmp/ccDMx18I.s:26     .text:0000000000000018 .LVL1
+     /tmp/ccDMx18I.s:46     .text:0000000000000028 .LVL2
+     /tmp/ccDMx18I.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccDMx18I.s:75     .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_ZN15MemoryAllocator9mem_allocEm
+_ZN15MemoryAllocator8mem_freeEPv

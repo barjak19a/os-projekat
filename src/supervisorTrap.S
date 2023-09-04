@@ -1,10 +1,10 @@
-.extern _ZN5Riscv20handleSupervisorTrapEv
+.extern _ZN5riscv20handleSupervisorTrapEv
 
 
 .align 4
-.global _ZN5Riscv14supervisorTrapEv
-.type _ZN5Riscv14supervisorTrapEv, @function
-_ZN5Riscv14supervisorTrapEv:
+.global _ZN5riscv14supervisorTrapEv
+.type _ZN5riscv14supervisorTrapEv, @function
+_ZN5riscv14supervisorTrapEv:
     addi sp, sp, -256
     # x0 ozicen na nulu
     # x1 cuvamo u  okviru same strukture konteksta
@@ -13,7 +13,7 @@ _ZN5Riscv14supervisorTrapEv:
     sd x\index, \index *8(sp)
     .endr
 
-        call _ZN5Riscv20handleSupervisorTrapEv
+        call _ZN5riscv20handleSupervisorTrapEv
 
     # x0 ozicen na nulu
     # x1 cuvamo u  okviru same strukture konteksta

@@ -4,6 +4,8 @@
 
 #ifndef PROJECT_BASE_V1_1_LIST_HPP
 #define PROJECT_BASE_V1_1_LIST_HPP
+//#include "../h/_thread.hpp"
+
 template<typename T>
 class List{
 private:
