@@ -28,3 +28,15 @@ int mem_free(void* adr){
     return (int)ret();
 }
 
+char getc(){
+    callOperation(41);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (char)ret;
+}
+
+void putc(char c){
+    __asm__ volatile("mv a1,%0": : "r"(c));
+    callOperation(42);
+}
+

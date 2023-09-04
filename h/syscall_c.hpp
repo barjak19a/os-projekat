@@ -8,6 +8,8 @@
 
 void * mem_alloc (size_t size);
 int mem_free (void* adr);
+void putc(char c);
+char getc();
 
 
 #endif //PROJECT_BASE_V1_1_SYSCALL_C_H
