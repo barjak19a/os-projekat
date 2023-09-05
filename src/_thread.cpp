@@ -6,6 +6,8 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/riscv.hpp"
 
+_thread* _thread::running = nullptr;
+
 void* operator new[](size_t n) {
     return MemoryAllocator::mem_alloc(n);
 }
@@ -14,13 +16,20 @@ void operator delete[](void *p)  {
     MemoryAllocator::mem_free(p);
 }
 
-
-/*
-void _thread::operator delete[](void *p) noexcept {
-    MemoryAllocator::mem_free(p);
+_thread *_thread::thread_create(_thread::Body body, void *args) {
+    return new _thread(body, args);
+}
+void _thread::dispatch() {
+    _thread *current = running;
+    if(current->state == 2){
+        Scheduler::put(current);
+    }
+    running = Scheduler::get();
+    _thread::contextSwitch(&current->context, &running->context);
 }
 
-void *_thread::operator new[](size_t n) {
-    return MemoryAllocator::mem_alloc(n);
+void _thread::thread_wrapper() {
+    riscv::popSppSpie();
+    running->body(running->args);
+    running->state = 4;
 }
- */

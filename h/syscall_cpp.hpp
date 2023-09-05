@@ -11,4 +11,5 @@
 void* operator new(size_t);
 void operator delete(void*);
 
+
 #endif //PROJECT_BASE_V1_1_SYSCALL_CPP_HPP

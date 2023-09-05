@@ -20,21 +20,27 @@ void riscv::handleSupervisorTrap() {
         size_t argument0;
         size_t argument1;
         size_t argument2;
+        size_t argument3;
 
         __asm__ volatile("mv %0, a0" : "=r" (argument0));
         __asm__ volatile("mv %0, a1" : "=r" (argument1));
         __asm__ volatile("mv %0, a2" : "=r" (argument2));
+        __asm__ volatile("mv %0, a3" : "=r" (argument3));
 
         uint64 sepc = r_sepc(); //cita pc
         w_sepc(sepc + 4); //uvecava pc za 4
 
         //uint64 sstatus = r_sstatus(); cita control and status registar
-        if (argument0 == 1){
+        if (argument0 == 0x1){
             void* allocated = MemoryAllocator::mem_alloc(argument1);
             __asm__ volatile ("mv a0, %0" : : "r" (allocated));
         }
-        else if(argument0 == 2){
+        else if(argument0 == 0x2){
             MemoryAllocator::mem_free((void*)argument1);
+        }
+        else if (argument0 == 0x11){
+            thread_t* handle = (thread_t*) argument1;
+            *handle = _thread::thread_create((_thread::Body)argument2, (void*)argument3);
         }
     } else if(scause == 0x8000000000000001UL){
         //SSI

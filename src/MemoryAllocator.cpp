@@ -92,11 +92,11 @@ void* MemoryAllocator::mem_alloc(size_t allocSize) {
         }
 
 
-        if ((void *) ((char *) currentBlock + sizeof(memblock)) != nullptr) {
+        //if ((void *) ((char *) currentBlock + sizeof(memblock)) != nullptr) {
             return (void *) ((char *) currentBlock + sizeof(memblock));
-        } else {
-            return nullptr;
-        }
+//        } else {
+//            return nullptr;
+//        }
     }
 
     return nullptr;

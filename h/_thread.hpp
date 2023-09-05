@@ -16,15 +16,20 @@ void operator delete[](void *p);
 
 class _thread {
 public:
-    using Body = void (*)();
+    struct Context {
+        uint64 ra;
+        uint64 sp;
+    };
+    using Body = void (*)(void*);
 
     static _thread *mainThread;
     static _thread *running;
 
     static void dispatch();
     static int exit();
-    static _thread* thread_create(Body body, void *args, void *stack);
+    static _thread* thread_create(Body body, void *args);
     static void thread_wrapper();
+    static void contextSwitch(Context *current, Context *next);
 
     ~_thread() { delete[] stack; }
 
@@ -37,14 +42,11 @@ private:
         this->args = args;
         this->stack = new uint64[DEFAULT_STACK_SIZE];
         this->state = 1;
-
         this->context = { (uint64) &thread_wrapper, (uint64) &(this->stack[DEFAULT_STACK_SIZE]) };
+        this->timeSlice = DEFAULT_TIME_SLICE;
     }
 
-    struct Context {
-        uint64 ra;
-        uint64 sp;
-    };
+
 
     Body body;
     Context context;

@@ -4,6 +4,7 @@
 
 #include "../h/syscall_c.hpp"
 #include "../lib/console.h"
+#include "../h/_thread.hpp"
 
 void callOperation(uint64 operationCode){
     __asm__ volatile ("mv a0, %0" : : "r" (operationCode));
@@ -18,18 +19,18 @@ uint64 ret(){
 
 void* mem_alloc(size_t size){
     __asm__ volatile("mv a1, %0": : "r"(size));
-    callOperation(1);
+    callOperation(0x1);
     return (void*)ret();
 }
 
 int mem_free(void* adr){
     __asm__ volatile("mv a1, %0": : "r"(adr));
-    callOperation(2);
+    callOperation(0x2);
     return (int)ret();
 }
 
 char getc(){
-    callOperation(41);
+    callOperation(0x41);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
     return (char)ret;
@@ -37,6 +38,25 @@ char getc(){
 
 void putc(char c){
     __asm__ volatile("mv a1,%0": : "r"(c));
-    callOperation(42);
+    callOperation(0x42);
+}
+
+int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
+    size_t argument1;
+    size_t argument2;
+    size_t argument3;
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+    __asm__ volatile("mv %0, a1" : "=r" (argument2));
+    __asm__ volatile("mv %0, a2" : "=r" (argument3));
+
+    __asm__ volatile("mv a1, %0" : : "r" ((thread_t*)argument1));
+    __asm__ volatile("mv a2, %0" : : "r" ((_thread::Body)argument2));
+    __asm__ volatile("mv a3, %0" : : "r" ((void*)argument3));
+
+    /*__asm__ volatile ("mv a1, %0": : "r"(&handle));
+    __asm__ volatile ("mv a2, %0": : "r"(start_routine));
+    __asm__ volatile ("mv a3, %0": : "r"(arg));*/
+    callOperation(0x11);
+    return 0;
 }
 
