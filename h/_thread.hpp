@@ -25,10 +25,11 @@ public:
     static _thread *mainThread;
     static _thread *running;
 
-    static void dispatch();
-    static int exit();
+    static void thread_dispatch();
+    static int thread_exit();
     static _thread* thread_create(Body body, void *args);
     static void thread_wrapper();
+    static void thread_join(thread_t handle);
     static void contextSwitch(Context *current, Context *next);
 
     ~_thread() { delete[] stack; }

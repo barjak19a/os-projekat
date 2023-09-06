@@ -57,6 +57,19 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
     __asm__ volatile ("mv a2, %0": : "r"(start_routine));
     __asm__ volatile ("mv a3, %0": : "r"(arg));*/
     callOperation(0x11);
-    return 0;
+    return (int)ret();
 }
+
+void thread_dispatch(){
+    callOperation(0x13);
+}
+int thread_exit(){
+    callOperation(0x12);
+    return (int)ret();
+}
+void thread_join(thread_t handle){
+    __asm__ volatile("mv a1, %0" : : "r"(handle));
+    callOperation(0x14);
+}
+
 

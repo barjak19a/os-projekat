@@ -19,7 +19,7 @@ void operator delete[](void *p)  {
 _thread *_thread::thread_create(_thread::Body body, void *args) {
     return new _thread(body, args);
 }
-void _thread::dispatch() {
+void _thread::thread_dispatch() {
     _thread *current = running;
     if(current->state == 2){
         Scheduler::put(current);
@@ -32,4 +32,14 @@ void _thread::thread_wrapper() {
     riscv::popSppSpie();
     running->body(running->args);
     running->state = 4;
+}
+
+int _thread::thread_exit() {
+   running->state = 4;
+   thread_dispatch();
+   return 0;
+}
+
+void _thread::thread_join(thread_t handle) {
+
 }
