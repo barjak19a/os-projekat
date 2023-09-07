@@ -28,17 +28,16 @@ void riscv::handleSupervisorTrap() {
         __asm__ volatile("mv %0, a3" : "=r" (argument3));
 
         uint64 sepc = r_sepc(); //cita pc
-        w_sepc(sepc + 4); //uvecava pc za 4
+        uint64 sstatus = r_sstatus(); //cita control and status registar
 
-        //uint64 sstatus = r_sstatus(); cita control and status registar
-        if (argument0 == 0x1){
+        if (argument0 == 0x1){//mem_alloc
             void* allocated = MemoryAllocator::mem_alloc(argument1);
             __asm__ volatile ("mv a0, %0" : : "r" (allocated));
         }
-        else if(argument0 == 0x2){
+        else if(argument0 == 0x2){//mem_free
             MemoryAllocator::mem_free((void*)argument1);
         }
-        else if (argument0 == 0x11){//create
+        else if (argument0 == 0x11){//create thread
             thread_t* handle = (thread_t*) argument1;
             *handle = _thread::thread_create((_thread::Body)argument2, (void*)argument3);
         }
@@ -48,12 +47,13 @@ void riscv::handleSupervisorTrap() {
         else if (argument0 == 0x13){//dispatch
             _thread::thread_dispatch();
         }
-        else if (argument0 == 0x14){
+        else if (argument0 == 0x14){//join
             thread_t handle = (thread_t)argument1;
             while(handle->state != 4){
                 _thread::thread_dispatch();
             }
         }
+        w_sstatus(sstatus); w_sepc(sepc+4);
     } else if(scause == 0x8000000000000001UL){
         //SSI
         mc_sip(SIP_SSIE);

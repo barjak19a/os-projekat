@@ -21,7 +21,7 @@ _thread *_thread::thread_create(_thread::Body body, void *args) {
 }
 void _thread::thread_dispatch() {
     _thread *current = running;
-    if(current->state == 2){
+    if(current && current->state == 2){
         Scheduler::put(current);
     }
     running = Scheduler::get();

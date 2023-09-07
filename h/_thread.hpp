@@ -9,6 +9,7 @@
 #include "MemoryAllocator.hpp"
 #include "../h/scheduler.hpp"
 #include "../h/syscall_c.hpp"
+#include "../lib/console.h"
 
 void * operator new[](size_t n);
 
@@ -41,10 +42,22 @@ private:
     _thread(Body body, void *args) {
         this->body = body;
         this->args = args;
-        this->stack = new uint64[DEFAULT_STACK_SIZE];
+        if(body != nullptr)
+            this->stack = new uint64[DEFAULT_STACK_SIZE];
+        else
+            this->stack = nullptr;
+
         this->state = 1;
-        this->context = { (uint64) &thread_wrapper, (uint64) &(this->stack[DEFAULT_STACK_SIZE]) };
+
+        uint64 ra = 0;
+        if(body != nullptr)
+            ra = (uint64) &thread_wrapper;
+        uint64 sp = 0;
+        if(stack != nullptr)
+            sp = (uint64) &stack[DEFAULT_STACK_SIZE];
+        this->context = { ra, sp };
         this->timeSlice = DEFAULT_TIME_SLICE;
+        if (body != nullptr) { Scheduler::put(this); }
     }
 
 

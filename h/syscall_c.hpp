@@ -14,5 +14,6 @@ int mem_free (void* adr);
 void putc(char c);
 char getc();
 int thread_create(thread_t*, void(*)(void*), void*);
+void thread_dispatch();
 
 #endif //PROJECT_BASE_V1_1_SYSCALL_C_H
