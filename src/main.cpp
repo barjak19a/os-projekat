@@ -22,8 +22,8 @@ int main() {
     __asm__ volatile ("mv a0, %0" : : "r" (45));
     __asm__ volatile ("ecall");
 
-    thread_t *handle = nullptr;
-    thread_create(handle, testMethod, nullptr);
+    //thread_t *handle = nullptr;
+    //thread_create(handle, testMethod, nullptr);
     //thread_dispatch();
     return 0;
 }

@@ -42,11 +42,14 @@ private:
     _thread(Body body, void *args) {
         this->body = body;
         this->args = args;
-        if(body != nullptr)
+        if(body != nullptr) {
             this->stack = new uint64[DEFAULT_STACK_SIZE];
-        else
+            __putc('a');
+        }
+        else {
             this->stack = nullptr;
-
+            __putc('b');
+        }
         this->state = 1;
 
         uint64 ra = 0;

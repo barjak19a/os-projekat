@@ -40,6 +40,7 @@ void riscv::handleSupervisorTrap() {
         else if (argument0 == 0x11){//create thread
             thread_t* handle = (thread_t*) argument1;
             *handle = _thread::thread_create((_thread::Body)argument2, (void*)argument3);
+            __putc('x');
         }
         else if (argument0 == 0x12){//exit
             _thread::thread_exit();

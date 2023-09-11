@@ -15,5 +15,6 @@ void putc(char c);
 char getc();
 int thread_create(thread_t*, void(*)(void*), void*);
 void thread_dispatch();
+void thread_join(thread_t);
 
 #endif //PROJECT_BASE_V1_1_SYSCALL_C_H

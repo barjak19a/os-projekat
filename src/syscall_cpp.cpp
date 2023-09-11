@@ -14,3 +14,26 @@ void *operator new(size_t n){
 void operator delete(void *p) {
     mem_free(p);
 }
+
+Thread::~Thread() {
+    delete myHandle;
+}
+void Thread::dispatch() {
+    thread_dispatch();
+}
+Thread::Thread(void (*body)(void *), void *arg) {
+    thread_create(&myHandle, body, arg);
+
+}
+Thread::Thread() {
+    thread_create(&myHandle, nullptr, nullptr);
+}
+
+void Thread::join() {
+    thread_join(this->myHandle);
+}
+int Thread::start() {
+    Scheduler::put(myHandle);
+    return 1;
+}
+

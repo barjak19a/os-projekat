@@ -17,7 +17,10 @@ void operator delete[](void *p)  {
 }
 
 _thread *_thread::thread_create(_thread::Body body, void *args) {
-    return new _thread(body, args);
+    __putc('1');
+    _thread* test = new _thread(body, args);
+    __putc('2');
+    return test;
 }
 void _thread::thread_dispatch() {
     _thread *current = running;
@@ -40,6 +43,3 @@ int _thread::thread_exit() {
    return 0;
 }
 
-void _thread::thread_join(thread_t handle) {
-
-}
