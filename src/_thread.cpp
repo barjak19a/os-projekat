@@ -21,16 +21,22 @@ _thread *_thread::thread_create(_thread::Body body, void *args, void *stackSpace
     return new _thread(body, args, stackSpace);
 }
 void _thread::thread_dispatch() {
+    __putc('t');
     _thread *current = running;
     if(current && current->state == 2){
+        __putc('y');
         Scheduler::put(current);
     }
+    __putc('u');
     running = Scheduler::get();
+    __putc('i');
     _thread::contextSwitch(&current->context, &running->context);
+    __putc('o');
 }
 
 void _thread::thread_wrapper() {
     riscv::popSppSpie();
+    running->state = 2;
     running->body(running->args);
     running->state = 4;
 }

@@ -29,8 +29,8 @@ void riscv::handleSupervisorTrap() {
         __asm__ volatile("mv %0, a3" : "=r" (argument3));
         __asm__ volatile("mv %0, a4" : "=r" (argument4));
 
-        uint64 sepc = r_sepc(); //cita pc
-        uint64 sstatus = r_sstatus(); //cita control and status registar
+
+        //uint64 sstatus = r_sstatus(); //cita control and status registar
 
         if (argument0 == 0x1){//mem_alloc
             void* allocated = MemoryAllocator::mem_alloc(argument1);
@@ -48,7 +48,14 @@ void riscv::handleSupervisorTrap() {
             _thread::thread_exit();
         }
         else if (argument0 == 0x13){//dispatch
+            __putc('e');
+            uint64  volatile sepc, sstatus;
+            sepc=r_sepc();
+            sstatus=r_sstatus();
             _thread::thread_dispatch();
+            w_sstatus(sstatus);
+            w_sepc(sepc);
+            __putc('r');
         }
         else if (argument0 == 0x14){//join
             thread_t handle = (thread_t)argument1;
@@ -56,7 +63,13 @@ void riscv::handleSupervisorTrap() {
                 _thread::thread_dispatch();
             }
         }
-        w_sstatus(sstatus); w_sepc(sepc+4);
+        else if (argument0 == 0x44) { //set user mode
+            __asm__ volatile ("csrc sstatus, %[mask]" : : [mask] "r"(1UL << 8));
+        }
+        //w_sstatus(sstatus);
+        uint64 sepc = r_sepc()+4; //cita pc
+        w_sepc(sepc);
+        __asm __volatile("csrc sip, 0x02");
     } else if(scause == 0x8000000000000001UL){
         //SSI
         mc_sip(SIP_SSIE);

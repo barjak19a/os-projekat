@@ -15,15 +15,17 @@ void testMethod(void *arg)
 int main() {
     MemoryAllocator::initialize();
     riscv::w_stvec((uint64)&riscv::supervisorTrap);
-    //riscv::ms_sstatus(riscv::SSTATUS_SIE);
-
+    riscv::ms_sstatus(riscv::SSTATUS_SIE);
     _thread::running = _thread::thread_create(nullptr, nullptr, nullptr);
+
+
     // upisuje 45 i poziva syscall 45 - getPid()
-    __asm__ volatile ("mv a0, %0" : : "r" (45));
+    __asm__ volatile ("mv a0, %0" : : "r" (0x44));
     __asm__ volatile ("ecall");
 
     thread_t *handle = nullptr;
     thread_create(handle, testMethod, nullptr);
-    //thread_dispatch();
+    __putc('q');
+    thread_dispatch();
     return 0;
 }
