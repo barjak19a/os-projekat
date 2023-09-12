@@ -28,7 +28,7 @@ public:
 
     static void thread_dispatch();
     static int thread_exit();
-    static _thread* thread_create(Body body, void *args);
+    static _thread* thread_create(Body body, void *args, void *stackSpace);
     static void thread_wrapper();
     static void thread_join(thread_t handle);
     static void contextSwitch(Context *current, Context *next);
@@ -39,11 +39,11 @@ private:
 
     friend class riscv;
 
-    _thread(Body body, void *args) {
+    _thread(Body body, void *args, void *stackSpace) {
         this->body = body;
         this->args = args;
         if(body != nullptr) {
-            this->stack = new uint64[DEFAULT_STACK_SIZE];
+            this->stack = (uint64*) stackSpace;
             __putc('a');
         }
         else {

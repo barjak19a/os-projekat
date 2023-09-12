@@ -16,11 +16,9 @@ void operator delete[](void *p)  {
     MemoryAllocator::mem_free(p);
 }
 
-_thread *_thread::thread_create(_thread::Body body, void *args) {
+_thread *_thread::thread_create(_thread::Body body, void *args, void *stackSpace) {
     __putc('1');
-    _thread* test = new _thread(body, args);
-    __putc('2');
-    return test;
+    return new _thread(body, args, stackSpace);
 }
 void _thread::thread_dispatch() {
     _thread *current = running;

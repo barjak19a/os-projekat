@@ -21,11 +21,13 @@ void riscv::handleSupervisorTrap() {
         size_t argument1;
         size_t argument2;
         size_t argument3;
+        size_t argument4;
 
         __asm__ volatile("mv %0, a0" : "=r" (argument0));
         __asm__ volatile("mv %0, a1" : "=r" (argument1));
         __asm__ volatile("mv %0, a2" : "=r" (argument2));
         __asm__ volatile("mv %0, a3" : "=r" (argument3));
+        __asm__ volatile("mv %0, a4" : "=r" (argument4));
 
         uint64 sepc = r_sepc(); //cita pc
         uint64 sstatus = r_sstatus(); //cita control and status registar
@@ -39,7 +41,7 @@ void riscv::handleSupervisorTrap() {
         }
         else if (argument0 == 0x11){//create thread
             thread_t* handle = (thread_t*) argument1;
-            *handle = _thread::thread_create((_thread::Body)argument2, (void*)argument3);
+            *handle = _thread::thread_create((_thread::Body)argument2, (void*)argument3, (void*)argument4);
             __putc('x');
         }
         else if (argument0 == 0x12){//exit
