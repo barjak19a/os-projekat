@@ -52,8 +52,8 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
 
     __asm__ volatile("mv a1, %0" : : "r" ((thread_t*)argument1));
     __asm__ volatile("mv a2, %0" : : "r" ((_thread::Body)argument2));
-    __asm__ volatile("mv a3, %0" : : "r" ((void*)argument3));
-    __asm__ volatile("mv a4, %0" : : "r" (stackSpace));
+    __asm__ volatile("mv t0, %0" : : "r" ((void*)argument3));
+    __asm__ volatile("mv t1, %0" : : "r" (stackSpace));
 
     /*__asm__ volatile ("mv a1, %0": : "r"(&handle));
     __asm__ volatile ("mv a2, %0": : "r"(start_routine));

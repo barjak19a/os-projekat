@@ -26,8 +26,8 @@ void riscv::handleSupervisorTrap() {
         __asm__ volatile("mv %0, a0" : "=r" (argument0));
         __asm__ volatile("mv %0, a1" : "=r" (argument1));
         __asm__ volatile("mv %0, a2" : "=r" (argument2));
-        __asm__ volatile("mv %0, a3" : "=r" (argument3));
-        __asm__ volatile("mv %0, a4" : "=r" (argument4));
+        __asm__ volatile("mv %0, t0" : "=r" (argument3));
+        __asm__ volatile("mv %0, t1" : "=r" (argument4));
 
         uint64 sepc = r_sepc(); //cita pc
         uint64 sstatus = r_sstatus(); //cita control and status registar
