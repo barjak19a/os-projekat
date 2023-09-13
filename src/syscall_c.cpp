@@ -20,9 +20,7 @@ uint64 ret(){
 void* mem_alloc(size_t size){
     __asm__ volatile("mv a1, %0": : "r"(size));
     callOperation(0x1);
-    uint64 volatile ret;
-    __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (void*)ret;
+    return (void*)ret();
 }
 
 int mem_free(void* adr){
@@ -65,9 +63,7 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
 }
 
 void thread_dispatch(){
-    __putc('w');
     callOperation(0x13);
-    __putc('e');
 }
 int thread_exit(){
     callOperation(0x12);

@@ -50,7 +50,7 @@ private:
             this->stack = nullptr;
             __putc('b');
         }
-        this->state = 2;
+        this->state = 1;
 
         uint64 ra = 0;
         if(body != nullptr)
@@ -71,7 +71,7 @@ private:
     uint64 timeSlice;
     void *args;
     uint64 state;
-    //1- NEW, 2- READY, 3- BLOCKED, 4- FINISHED
+    //1- CREATED, 2- READY, 3- BLOCKED, 4- FINISHED
 };
 
 #endif //PROJECT_BASE_V1_1__THREAD_HPP
