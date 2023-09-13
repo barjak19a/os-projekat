@@ -22,10 +22,9 @@ int main() {
     // upisuje 45 i poziva syscall 45 - getPid()
     __asm__ volatile ("mv a0, %0" : : "r" (0x44));
     __asm__ volatile ("ecall");
-
-    thread_t *handle = nullptr;
-    thread_create(handle, testMethod, nullptr);
-    __putc('q');
+    
+    thread_t handle = nullptr;
+    thread_create(&handle, testMethod, nullptr);
     thread_dispatch();
     return 0;
 }

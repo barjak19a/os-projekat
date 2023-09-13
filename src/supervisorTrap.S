@@ -15,6 +15,8 @@ _ZN5riscv14supervisorTrapEv:
 
         call _ZN5riscv20handleSupervisorTrapEv
 
+    sd a0, 10*8(sp)
+
     # x0 ozicen na nulu
     # x1 cuvamo u  okviru same strukture konteksta
     # x2 cuvamo u okvritu same strukture konteksta
