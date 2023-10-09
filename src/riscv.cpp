@@ -61,5 +61,8 @@ void riscv::handleSupervisorTrap() {
         //SSI
         mc_sip(SIP_SSIE);
         //ne znam sta radi, SIP_SSIE je vrednost (1<<1), kod boza je ova vrednost SIP_SSIP ista
+    } else if (scause == 0x8000000000000009UL) {
+        // interrupt: yes; cause code: supervisor external interrupt (PLIC; could be keyboard)
+        console_handler();
     }
 }
