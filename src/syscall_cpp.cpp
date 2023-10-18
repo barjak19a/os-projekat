@@ -23,7 +23,6 @@ void Thread::dispatch() {
 }
 Thread::Thread(void (*body)(void *), void *arg) {
     thread_create(&myHandle, body, arg);
-
 }
 Thread::Thread() {
     thread_create(&myHandle, nullptr, nullptr);

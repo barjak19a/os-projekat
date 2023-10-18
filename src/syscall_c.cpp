@@ -11,22 +11,26 @@ void callOperation(uint64 operationCode){
     __asm__ volatile ("ecall");
 }
 
-uint64 ret(){
-    uint64 volatile ret_val;
-    __asm__ volatile ("mv %0, a0":"=r"(ret_val));
-    return  ret_val;
-}
+//uint64 ret(){
+//    uint64 volatile ret_val;
+//    __asm__ volatile ("mv %0, a0":"=r"(ret_val));
+//    return  ret_val;
+//}
 
 void* mem_alloc(size_t size){
     __asm__ volatile("mv a1, %0": : "r"(size));
     callOperation(0x1);
-    return (void*)ret();
+//    return (void*)ret();
+    void* ret;
+    __asm__ volatile("mv %0, a0" : "=r" (ret));
+
+    return ret;
 }
 
 int mem_free(void* adr){
     __asm__ volatile("mv a1, %0": : "r"(adr));
     callOperation(0x2);
-    return (int)ret();
+    return 1;
 }
 
 char getc(){
@@ -59,7 +63,7 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
     __asm__ volatile ("mv a2, %0": : "r"(start_routine));
     __asm__ volatile ("mv a3, %0": : "r"(arg));*/
     callOperation(0x11);
-    return (int)ret();
+    return 1;
 }
 
 void thread_dispatch(){
@@ -67,7 +71,7 @@ void thread_dispatch(){
 }
 int thread_exit(){
     callOperation(0x12);
-    return (int)ret();
+    return 1;
 }
 void thread_join(thread_t handle){
     __asm__ volatile("mv a1, %0" : : "r"(handle));

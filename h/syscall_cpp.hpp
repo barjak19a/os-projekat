@@ -22,6 +22,7 @@ protected:
     Thread ();
     virtual void run () {}
 private:
+    friend class _thread;
     thread_t myHandle;
     void (*body)(void*); void* arg;
 };
