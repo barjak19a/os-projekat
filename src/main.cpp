@@ -12,6 +12,12 @@ void testMethod(void *arg)
     __putc('t');
 }
 
+/*
+ * puca dispatch popSppSpie u thread wrapperu
+ * drugi alokator nije popravio
+ * drugi riscv nije popravio
+ * drugi thread nije popravio
+ * */
 int main() {
     MemoryAllocator::initialize();
     riscv::w_stvec((uint64)&riscv::supervisorTrap);
