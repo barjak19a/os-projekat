@@ -32,7 +32,10 @@ void _thread::thread_dispatch() {
 void _thread::thread_wrapper() {
     riscv::popSppSpie();
     running->state = 2;
-    running->body(running->args);
+    if (running->body)
+    {
+        running->body(running->args);
+    }
     running->state = 4;
 }
 
