@@ -1,9 +1,8 @@
-#include "../lib/hw.h"
-#include "../lib/console.h"
-#include "../h/syscall_c.hpp"
-#include "../h/MemoryAllocator.hpp"
+#include "../h/printing.hpp"
 #include "../h/riscv.hpp"
-#include "../h/_thread.hpp"
+#include "../h/UserMain.hpp"
+#include "../h/MemoryAllocator.hpp"
+#include "../lib/console.h"
 
 void testMethod(void *arg)
 {
@@ -12,28 +11,28 @@ void testMethod(void *arg)
     __putc('t');
 }
 
-/*
- * puca dispatch popSppSpie u thread wrapperu
- * drugi alokator nije popravio
- * drugi riscv nije popravio
- * drugi thread nije popravio
- * problem je sto se posle thread create ne resetuje sepc kako treba i sstatus kako treba
- * */
+
 int main() {
-    MemoryAllocator::initialize();
-    riscv::w_stvec((uint64)&riscv::supervisorTrap);
 
-    _thread::running = _thread::thread_create(nullptr, nullptr, nullptr);
+    MemoryAllocator::mem_init();
 
-    riscv::ms_sstatus(riscv::SSTATUS_SPIE | riscv::SSTATUS_SPP);
-    // upisuje 45 i poziva syscall 45 - getPid()
+    Riscv::w_stvec((uint64) &Riscv::supervisorTrap);
+
+    _thread::running = _thread::createThread(nullptr);
+
+    Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
+
     __asm__ volatile ("mv a0, %0" : : "r" (45));
     __asm__ volatile ("ecall");
-    
+
+    //userMain();
+
     thread_t handle = nullptr;
     thread_create(&handle, testMethod, nullptr);
-    __asm__ volatile ("csrw sepc, %0" : : "r" (0));
-    __asm__ volatile ("csrw sstatus, %0" : : "r" (0x120));
+    //__asm__ volatile ("csrw sepc, %0" : : "r" (0));
+    //__asm__ volatile ("csrw sstatus, %0" : : "r" (0x120));
     thread_dispatch();
+
+    printString("Finished\n");
     return 0;
 }

@@ -1,7 +1,3 @@
-//
-// Created by os on 9/4/23.
-//
-
 #include "../h/printing.hpp"
 
 uint64 lockPrint = 0;
@@ -31,8 +27,10 @@ char* getString(char *buf, int max) {
             break;
         c = cc;
         buf[i++] = c;
-        if(c == '\n' || c == '\r')
+        if(c == '\n' || c == '\r'){
+            putc(c);
             break;
+        }
     }
     buf[i] = '\0';
 

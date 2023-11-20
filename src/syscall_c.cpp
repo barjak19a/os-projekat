@@ -1,81 +1,137 @@
-//
-// Created by os on 8/20/23.
-//
-
 #include "../h/syscall_c.hpp"
-#include "../lib/console.h"
-#include "../h/_thread.hpp"
 
-void callOperation(uint64 operationCode){
-    __asm__ volatile ("mv a0, %0" : : "r" (operationCode));
+void insert_and_ecall(uint64 br){
+
+    __asm__ volatile ("mv a0, %0" : : "r" (br));
     __asm__ volatile ("ecall");
 }
 
-//uint64 ret(){
-//    uint64 volatile ret_val;
-//    __asm__ volatile ("mv %0, a0":"=r"(ret_val));
-//    return  ret_val;
-//}
-
 void* mem_alloc(size_t size){
-    __asm__ volatile("mv a1, %0": : "r"(size));
-    callOperation(0x1);
-//    return (void*)ret();
+
+    size_t argument1;
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+
+    __asm__ volatile("mv a1, %0" : : "r" (argument1));
+
+    insert_and_ecall(1);
+
     void* ret;
     __asm__ volatile("mv %0, a0" : "=r" (ret));
 
     return ret;
+
 }
 
-int mem_free(void* adr){
-    __asm__ volatile("mv a1, %0": : "r"(adr));
-    callOperation(0x2);
+int mem_free(void* addr){
+
+    size_t argument1;
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+
+    __asm__ volatile("mv a1, %0" : : "r" ((void*) argument1));
+
+    insert_and_ecall(2);
+
     return 1;
 }
 
-char getc(){
-    callOperation(0x41);
-    uint64 volatile ret;
-    __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (char)ret;
-}
+int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
 
-void putc(char c){
-    __asm__ volatile("mv a1,%0": : "r"(c));
-    callOperation(0x42);
-}
-
-int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
     size_t argument1;
     size_t argument2;
     size_t argument3;
-    void* stackSpace = mem_alloc(DEFAULT_STACK_SIZE);
     __asm__ volatile("mv %0, a0" : "=r" (argument1));
     __asm__ volatile("mv %0, a1" : "=r" (argument2));
     __asm__ volatile("mv %0, a2" : "=r" (argument3));
 
     __asm__ volatile("mv a1, %0" : : "r" ((thread_t*)argument1));
     __asm__ volatile("mv a2, %0" : : "r" ((_thread::Body)argument2));
-    __asm__ volatile("mv t0, %0" : : "r" ((void*)argument3));
-    __asm__ volatile("mv t1, %0" : : "r" (stackSpace));
+    __asm__ volatile("mv a3, %0" : : "r" ((void*)argument3));
 
-    /*__asm__ volatile ("mv a1, %0": : "r"(&handle));
-    __asm__ volatile ("mv a2, %0": : "r"(start_routine));
-    __asm__ volatile ("mv a3, %0": : "r"(arg));*/
-    callOperation(0x11);
+    insert_and_ecall(11);
+
     return 1;
 }
 
-void thread_dispatch(){
-    callOperation(0x13);
-}
-int thread_exit(){
-    callOperation(0x12);
+int thread_exit (){
+    insert_and_ecall(12);
     return 1;
 }
-void thread_join(thread_t handle){
-    __asm__ volatile("mv a1, %0" : : "r"(handle));
-    callOperation(0x14);
+
+void thread_dispatch (){
+    insert_and_ecall(13);
 }
 
+int sem_open (sem_t* handle, unsigned init){
 
+    size_t argument1;
+    size_t argument2;
+
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+    __asm__ volatile("mv %0, a1" : "=r" (argument2));
+
+    __asm__ volatile("mv a1, %0" : : "r" ((sem_t*)argument1));
+    __asm__ volatile("mv a2, %0" : : "r" (argument2));
+
+    insert_and_ecall(21);
+
+    return 1;
+
+}
+
+int sem_close (sem_t handle){
+
+    size_t argument1;
+
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+
+    __asm__ volatile("mv a1, %0" : : "r" ((sem_t)argument1));
+
+    insert_and_ecall(22);
+
+    return 1;
+}
+
+int sem_wait (sem_t id){
+
+    size_t argument1;
+
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+
+    __asm__ volatile("mv a1, %0" : : "r" ((sem_t)argument1));
+
+    insert_and_ecall(23);
+    return 1;
+}
+
+int sem_signal (sem_t id){
+
+    size_t argument1;
+
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+    __asm__ volatile("mv a1, %0" : : "r" ((sem_t)argument1));
+
+    insert_and_ecall(24);
+
+    return 1;
+}
+
+char getc (){
+
+    insert_and_ecall(41);
+
+    char ret;
+    __asm__ volatile("mv %0, a0" : "=r" (ret));
+
+    return ret;
+}
+
+void putc (char){
+
+    size_t argument1;
+
+    __asm__ volatile("mv %0, a0" : "=r" (argument1));
+    __asm__ volatile("mv a1, %0" : : "r" ((char)argument1));
+
+    insert_and_ecall(42);
+
+ }

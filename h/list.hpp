@@ -1,10 +1,5 @@
-//
-// Created by os on 8/18/23.
-//
-
-#ifndef PROJECT_BASE_V1_1_LIST_HPP
-#define PROJECT_BASE_V1_1_LIST_HPP
-//#include "../h/_thread.hpp"
+#ifndef OSPROJECT_LIST_HPP
+#define OSPROJECT_LIST_HPP
 
 template<typename T>
 class List{
@@ -75,4 +70,5 @@ public:
         return tail->data;
     }
 };
-#endif //PROJECT_BASE_V1_1_LIST_HPP
+
+#endif //OSPROJECT_LIST_HPP

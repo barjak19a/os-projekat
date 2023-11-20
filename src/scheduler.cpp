@@ -1,6 +1,3 @@
-//
-// Created by os on 8/18/23.
-//
 #include "../h/scheduler.hpp"
 
 List<_thread>Scheduler::readyCoroutineQueue;

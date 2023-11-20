@@ -1,197 +1,158 @@
-//
-// Created by os on 8/14/23.
-//
-
 #include "../h/MemoryAllocator.hpp"
 
-memblock* MemoryAllocator::freeHead = nullptr;
-memblock* MemoryAllocator::allocatedHead = nullptr;
+memBlock* MemoryAllocator::freeBlocks = nullptr;
+memBlock* MemoryAllocator::allocBlocks = nullptr;
 
-void MemoryAllocator::initialize(){
-    freeHead = (memblock*) HEAP_START_ADDR;
-    freeHead->prev = freeHead->next = nullptr;
-    freeHead->size = ((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR);
+void MemoryAllocator::tryToJoin(memBlock* cur){
+
+    if(!cur) return;
+
+    if(cur->next &&  (char*)cur + cur->size + sizeof(memBlock) == (char*)(cur->next)){
+        cur->size += cur->next->size;
+        cur->next = cur->next->next;
+        if(cur->next) cur->next->prev = cur;
+    }
 }
 
-void* MemoryAllocator::mem_alloc(size_t allocSize) {
-    memblock* currentBlock = freeHead;
-    int inserted = 0;
+void MemoryAllocator::mem_init() {
+    freeBlocks = (memBlock*)HEAP_START_ADDR;
+    freeBlocks->size = ((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR);
+    freeBlocks->prev = nullptr;
+    freeBlocks->next = nullptr;
+}
 
-    if (allocSize <= MEM_BLOCK_SIZE){
-        allocSize = MEM_BLOCK_SIZE;
-    } else {
-        allocSize = (allocSize / MEM_BLOCK_SIZE + 1) * MEM_BLOCK_SIZE;
-    }
+void* MemoryAllocator::mem_alloc(size_t sz){
 
-    while (currentBlock) {
-        if (currentBlock->size >= allocSize + sizeof(memblock)) {
-            //nasli blok
-            if(currentBlock->size > allocSize + sizeof(memblock)) {
-                //izracunaj ostatak bloka
-                memblock *blockRemainder = (memblock *) ((char *) currentBlock + sizeof(memblock) + allocSize);
-                blockRemainder->prev = blockRemainder->next = nullptr;
-                blockRemainder->size = currentBlock->size - allocSize - sizeof (memblock);
+    size_t block_size;
 
-                //uvezi ostatak bloka
-                if(currentBlock->prev){
-                    currentBlock->prev->next = blockRemainder;
-                    blockRemainder->prev = currentBlock->prev;
-                }
-                if(currentBlock->next){
-                    currentBlock->next->prev = blockRemainder;
-                    blockRemainder->next = currentBlock->next;
-                }
-                if(currentBlock == freeHead) {
-                    freeHead = blockRemainder;
-                }
-                break;
-            } else {
-                if(currentBlock->prev){
-                    currentBlock->prev->next = currentBlock->next;
-                }
-                if(currentBlock->next){
-                    currentBlock->next->prev = currentBlock->prev;
-                }
-                if(currentBlock == freeHead){
-                    freeHead = currentBlock->next;
-                }
-                break;
-            }
+    block_size = (sz <= MEM_BLOCK_SIZE) ? MEM_BLOCK_SIZE : (sz / MEM_BLOCK_SIZE + 1) * MEM_BLOCK_SIZE;
+
+    memBlock* curr = freeBlocks;
+
+    while(curr != nullptr && curr->size < block_size) curr = curr->next;
+
+    if(curr){
+
+        if (freeBlocks == curr) {
+            freeBlocks = curr->next;
         }
-        currentBlock = currentBlock->next;
-    }
-    memblock* currentAllocatedBlock = nullptr;
-    if(currentBlock != nullptr) {
-        if (allocatedHead == nullptr) {
-            allocatedHead = currentBlock;
-            allocatedHead->next = allocatedHead->prev = nullptr;
-        } else if (currentBlock < allocatedHead) {
 
-            currentBlock->next = allocatedHead;
-            currentBlock->prev = nullptr;
-            allocatedHead = currentBlock;
+        if (curr->prev != nullptr) {
+            curr->prev->next = curr->next;
+        }
+
+        if (curr->next != nullptr) {
+            curr->next->prev = curr->prev;
+        }
+
+        if (curr->size > block_size + sizeof(memBlock)) {
+
+                memBlock *remainBlock = (memBlock *) ((char *) (curr) + sizeof(memBlock) + block_size);
+                remainBlock->size = curr->size - block_size - sizeof(memBlock);
+                remainBlock->next = remainBlock->prev = nullptr;
+
+                if (freeBlocks == nullptr) {
+                    freeBlocks = remainBlock;
+                    remainBlock->prev = nullptr;
+                    remainBlock->next = nullptr;
+                } else if (remainBlock < freeBlocks) {
+                    remainBlock->prev = nullptr;
+                    remainBlock->next = freeBlocks;
+                    freeBlocks->prev = remainBlock;
+                    freeBlocks = remainBlock;
+                } else {
+                    memBlock* current = freeBlocks;
+                    while (current->next != nullptr && current->next < remainBlock) {
+                        current = current->next;
+                    }
+                    remainBlock->prev = current;
+                    remainBlock->next = current->next;
+                    if (current->next != nullptr) {
+                        current->next->prev = remainBlock;
+                    }
+                    current->next = remainBlock;
+                }
+
+            curr->size = block_size + sizeof(memBlock);
+        }
+
+        if (allocBlocks == nullptr) {
+            allocBlocks = curr;
+            curr->prev = nullptr;
+            curr->next = nullptr;
+        } else if (curr < allocBlocks) {
+            curr->prev = nullptr;
+            curr->next = allocBlocks;
+            allocBlocks->prev = curr;
+            allocBlocks = curr;
         } else {
-            currentAllocatedBlock = allocatedHead;
-            while (currentAllocatedBlock->next) {
-                if (currentBlock < currentAllocatedBlock) {
-                    currentBlock->next = currentAllocatedBlock;
-                    currentBlock->prev = currentAllocatedBlock->prev;
-                    currentAllocatedBlock->prev->next = currentBlock;
-                    currentAllocatedBlock->prev = currentBlock;
-                    inserted = 1;
-                    break;
-                }
-                currentAllocatedBlock = currentAllocatedBlock->next;
+            memBlock* current = allocBlocks;
+            while (current->next != nullptr && current->next < curr) {
+                current = current->next;
             }
-
-            if (inserted == 0) {
-                currentBlock->prev = currentAllocatedBlock;
-                currentBlock->next = nullptr;
-                currentAllocatedBlock->next = currentBlock;
+            curr->prev = current;
+            curr->next = current->next;
+            if (current->next != nullptr) {
+                current->next->prev = curr;
             }
+            current->next = curr;
         }
 
+        return (void *) ((char *) curr + sizeof(memBlock));
 
-        //if ((void *) ((char *) currentBlock + sizeof(memblock)) != nullptr) {
-            return (void *) ((char *) currentBlock + sizeof(memblock));
-//        } else {
-//            return nullptr;
-//        }
     }
 
     return nullptr;
 
-    //uvezi u allocated
-    // svakom bloku nadji mesto
-    // 1. scenario blok je na pocetku
-    // 2. scenario blok je u sredini
-    // 3. scenario blok je na kraju
+};
 
-}
+int MemoryAllocator::mem_free(void* addr){
 
-int MemoryAllocator::mem_free(void* ptr) {
-    //dolazi mi pokazivac na adresu pocetka bloka, treba da izvucem taj blok iz liste
-    //pa onda da prevezem prev i next ako ima
-    if (ptr == nullptr){
-        return -1;
+    if (!addr)return -1;
+
+    memBlock *new_block = (memBlock *) ((char *) (addr) - sizeof(memBlock));
+
+
+    if (allocBlocks == nullptr || new_block == nullptr) {
+        return 0;
     }
 
-    memblock* currentBlock = (memblock *) ((char *) (ptr) - sizeof(memblock));
-
-    if (allocatedHead == nullptr){
-        return -1;
+    if (allocBlocks == new_block) {
+        allocBlocks = new_block->next;
     }
 
-    if(allocatedHead == currentBlock){
-        allocatedHead = currentBlock->next;
+    if (new_block->prev != nullptr) {
+        new_block->prev->next = new_block->next;
     }
-    if(currentBlock->prev){
-        currentBlock->prev->next = currentBlock->next;
-    }
-    if(currentBlock->next){
-        currentBlock->next->prev = currentBlock->prev;
-    }
-    //ubaci blok u niz free
-    //probaj na pocetak
-    //probaj u sredinu
-    //probaj na kraj
 
-    if(freeHead == nullptr){
-        freeHead->next = freeHead->prev = nullptr;
-        freeHead = currentBlock;
-    } else
-    if(currentBlock < freeHead){
-        freeHead->prev = currentBlock;
-        currentBlock->next = freeHead;
-        freeHead = currentBlock;
-        freeHead->prev = nullptr;
-    }else {
-        memblock* curr = freeHead;
+    if (new_block->next != nullptr) {
+        new_block->next->prev = new_block->prev;
+    }
 
-        while (curr->next && curr->next < currentBlock){
-            curr = curr->next;
+    if (freeBlocks == nullptr) {
+        freeBlocks = new_block;
+        new_block->prev = nullptr;
+        new_block->next = nullptr;
+    } else if (new_block < freeBlocks) {
+        new_block->prev = nullptr;
+        new_block->next = freeBlocks;
+        freeBlocks->prev = new_block;
+        freeBlocks = new_block;
+    } else {
+        memBlock* current = freeBlocks;
+        while (current->next != nullptr && current->next < new_block) {
+            current = current->next;
         }
-        if(curr->next == nullptr){
-            //dosao do kraja liste
-            curr->next = currentBlock;
-            currentBlock->prev = curr;
-        }else {
-            //nasao mu mesto u sred liste
-            currentBlock->prev = curr;
-            curr->next->prev = currentBlock;
-            currentBlock->next = curr->next;
-            curr->next = currentBlock;
+        new_block->prev = current;
+        new_block->next = current->next;
+        if (current->next != nullptr) {
+            current->next->prev = new_block;
         }
+        current->next = new_block;
     }
 
-    // probaj da spojis oslobodjeni blok sa delovima oko sebe da ne bi doslo do fragmentacije
-
-    if(currentBlock->prev){
-        memblock* curr = currentBlock->prev;
-        if((char*)(curr + curr->size + sizeof(memblock)) == (char*)currentBlock){
-            //spajam ga sa prethodnim
-            curr->size = curr->size + currentBlock->size;
-            if(currentBlock->next) {
-                curr->next = currentBlock->next;
-                currentBlock->next->prev = curr;
-            }
-        }
-    }
-
-    if (currentBlock->next){
-        memblock* curr = currentBlock->next;
-        if((char*)(currentBlock + currentBlock->size + sizeof(memblock)) == (char*)curr){
-            //spajam ga sa sledecim
-            currentBlock->size = currentBlock->size + curr ->size;
-            if(curr->next) {
-                curr->next->prev = currentBlock;
-                currentBlock->next = curr->next;
-            }
-        }
-    }
+    tryToJoin(new_block->prev);
+    tryToJoin(new_block);
 
     return 0;
-
-}
-
-
+};

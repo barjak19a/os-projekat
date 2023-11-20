@@ -1,77 +1,67 @@
-//
-// Created by os on 9/3/23.
-//
+#ifndef PROJEKATOS__THREAD_H
+#define PROJEKATOS__THREAD_H
 
-#ifndef PROJECT_BASE_V1_1__THREAD_HPP
-#define PROJECT_BASE_V1_1__THREAD_HPP
 
 #include "../lib/hw.h"
-#include "MemoryAllocator.hpp"
 #include "../h/scheduler.hpp"
-#include "../h/syscall_c.hpp"
-#include "../lib/console.h"
+#include "../h/syscall_cpp.hpp"
 
 void * operator new[](size_t n);
 
 void operator delete[](void *p);
 
+class Thread;
+
 class _thread {
-public:
-    struct Context {
-        uint64 ra;
-        uint64 sp;
-    };
-    using Body = void (*)(void*);
+        public:
 
-    static _thread *mainThread;
-    static _thread *running;
+        enum{READY=1, BLOCKED=2 ,FINISHED=3};
 
-    static void thread_dispatch();
-    static int thread_exit();
-    static _thread* thread_create(Body body, void *args, void *stackSpace);
-    static void thread_wrapper();
-    static void thread_join(thread_t handle);
-    static void contextSwitch(Context *current, Context *next);
+        ~_thread() { delete[] stack; }
 
-    ~_thread() { delete[] stack; }
+        int getState() const;
+        void setState(int state);
 
-private:
+        static void finishThread();
 
-    friend class riscv;
 
-    _thread(Body body, void *args, void *stackSpace) {
-        this->body = body;
-        this->args = args;
-        if(body != nullptr) {
-            this->stack = (uint64*) stackSpace;
-            __putc('a');
-        }
-        else {
-            this->stack = nullptr;
-            __putc('b');
-        }
-        this->state = 2;
+        uint64 getTimeSlice() const { return timeSlice; }
+        using Body = void (*)();
+        static _thread *createThread(Body body);
+        static _thread *running;
 
-        uint64 ra = 0;
-        if(body != nullptr)
-            ra = (uint64) &thread_wrapper;
-        uint64 sp = 0;
-        if(stack != nullptr)
-            sp = (uint64) &stack[DEFAULT_STACK_SIZE];
-        this->context = { ra, sp };
-        this->timeSlice = DEFAULT_TIME_SLICE;
+        private:
+        _thread(Body body, uint64 timeSlice) : body(body),
+        stack(new uint64[STACK_SIZE]),
+        context({(uint64) &threadWrapper,
+                 (uint64) &stack[STACK_SIZE]}),
+                 timeSlice(timeSlice)
+        {
         if (body != nullptr) { Scheduler::put(this); }
-    }
+        myThread = nullptr;
+        state = _thread::READY;
+        }
+        struct Context { uint64 ra; uint64 sp; };
+        Body body;
+        uint64 *stack;
+        Context context;
+        uint64 timeSlice;
 
+        friend class Riscv;
+        friend class Thread;
+        
+        Thread* myThread;
+        int state;
 
+        static void threadWrapper();
+        static void contextSwitch(Context *oldContext, Context *runningContext);
+        static void dispatch();
 
-    Body body;
-    Context context;
-    uint64* stack;
-    uint64 timeSlice;
-    void *args;
-    uint64 state;
-    //1- NEW, 2- READY, 3- BLOCKED, 4- FINISHED
+        static uint64 timeSliceCounter;
+
+        static uint64 constexpr STACK_SIZE = 1024;
+        static uint64 constexpr TIME_SLICE = 2;
 };
 
-#endif //PROJECT_BASE_V1_1__THREAD_HPP
+
+#endif //PROJEKATOS__THREAD_H

@@ -1,27 +1,27 @@
-#ifndef MEMORY_ALLOCATOR_HPP
-#define MEMORY_ALLOCATOR_HPP
+#ifndef PROJEKATOS_MEMORYALLOCATOR_HPP
+#define PROJEKATOS_MEMORYALLOCATOR_HPP
 
-#include "../lib/hw.h"
+#include "../lib/mem.h"
 
-
-struct memblock {
+struct memBlock{
     size_t size;
-    memblock* prev;
-    memblock* next;
+    memBlock* prev;
+    memBlock* next;
 };
 
 class MemoryAllocator {
-public:
 
-    static void* mem_alloc(size_t allocSize);
-    static int mem_free(void* ptr);
-    static void initialize();
+public:
+    static void tryToJoin(memBlock*);
+    static void mem_init();
+    static void* mem_alloc (size_t);
+    static int mem_free (void*);
 
 
 private:
-
-    static memblock* freeHead;
-    static memblock* allocatedHead;
-
+    static memBlock * freeBlocks;
+    static memBlock * allocBlocks;
 };
-#endif // MEMORY_ALLOCATOR_HPP
+
+
+#endif //PROJEKATOS_MEMORYALLOCATOR_HPP

@@ -1,9 +1,6 @@
-//
-// Created by os on 8/18/23.
-//
+#ifndef OSPROJECT_SCHEDULER_HPP
+#define OSPROJECT_SCHEDULER_HPP
 
-#ifndef PROJECT_BASE_V1_1_SCHEDULER_HPP
-#define PROJECT_BASE_V1_1_SCHEDULER_HPP
 #include "list.hpp"
 
 class _thread;
@@ -16,4 +13,5 @@ public:
 
     static void put(_thread *ccb);
 };
-#endif //PROJECT_BASE_V1_1_SCHEDULER_HPP
+
+#endif //OSPROJECT_SCHEDULER_HPP

@@ -1,55 +1,52 @@
-//
-// Created by os on 9/4/23.
-//
+#ifndef PROJEKATOS_SYSCALL_CPP_HPP
+#define PROJEKATOS_SYSCALL_CPP_HPP
 
-#ifndef PROJECT_BASE_V1_1_SYSCALL_CPP_HPP
-#define PROJECT_BASE_V1_1_SYSCALL_CPP_HPP
-
-#include "syscall_c.hpp"
 #include "../lib/hw.h"
+#include "../h/syscall_c.hpp"
 
 void* operator new(size_t);
-void operator delete(void*);
+void  operator delete(void*);
+
+class _thread;
+typedef _thread* thread_t;
+
+class _sem;
+typedef _sem* sem_t;
+
 class Thread {
 public:
-    Thread (void (*body)(void*), void* arg);
-    virtual ~Thread ();
-    int start ();
-    void join();
-    static void dispatch ();
-    //static int sleep (time_t);
+    Thread(void (*body)(void*), void* arg);
+    virtual ~Thread();
+    static void dispatch();
+    int start();
+    static int sleep(time_t);
 protected:
-    Thread ();
-    virtual void run () {}
+    Thread();
+    virtual void run() {}
 private:
     friend class _thread;
     thread_t myHandle;
-    void (*body)(void*); void* arg;
 };
-/*
 class Semaphore {
 public:
-    Semaphore (unsigned init = 1);
-    virtual ~Semaphore ();
-    int wait ();
-    int signal ();
+    Semaphore(unsigned init = 1);
+
+    virtual ~Semaphore();
+    int signal();
+    int wait();
 private:
     sem_t myHandle;
 };
+
 class PeriodicThread : public Thread {
-public:
-    void terminate ();
 protected:
-    PeriodicThread (time_t period);
-    virtual void periodicActivation () {}
-private:
-    time_t period;
+    PeriodicThread(time_t period);
+    virtual void periodicActivation() {}
 };
 class Console {
 public:
-    static char getc ();
-    10
-    static void putc (char);
+    static char getc();
+    static void putc(char);
 };
-*/
-#endif //PROJECT_BASE_V1_1_SYSCALL_CPP_HPP
+
+#endif //PROJEKATOS_SYSCALL_CPP_HPP
