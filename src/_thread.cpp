@@ -36,6 +36,10 @@ void _thread::thread_wrapper() {
     {
         running->body(running->args);
     }
+    else
+    {
+        running->myThread->run();
+    }
     running->state = 4;
 }
 

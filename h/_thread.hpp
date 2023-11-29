@@ -10,6 +10,7 @@
 #include "../h/scheduler.hpp"
 #include "../h/syscall_c.hpp"
 #include "../lib/console.h"
+#include "../h/syscall_cpp.hpp"
 
 void * operator new[](size_t n);
 
@@ -63,7 +64,8 @@ private:
         if (body != nullptr) { Scheduler::put(this); }
     }
 
-
+    friend class Thread;
+    Thread* myThread;
 
     Body body;
     Context context;
