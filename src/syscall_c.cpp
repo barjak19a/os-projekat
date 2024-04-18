@@ -49,11 +49,11 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
     size_t argument1;
     size_t argument2;
     size_t argument3;
-    void* stackSpace = mem_alloc(DEFAULT_STACK_SIZE);
+
     __asm__ volatile("mv %0, a0" : "=r" (argument1));
     __asm__ volatile("mv %0, a1" : "=r" (argument2));
     __asm__ volatile("mv %0, a2" : "=r" (argument3));
-
+    void* stackSpace = mem_alloc(DEFAULT_STACK_SIZE);
     __asm__ volatile("mv a1, %0" : : "r" ((thread_t*)argument1));
     __asm__ volatile("mv a2, %0" : : "r" ((_thread::Body)argument2));
     __asm__ volatile("mv t0, %0" : : "r" ((void*)argument3));
@@ -69,10 +69,12 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
 void thread_dispatch(){
     callOperation(0x13);
 }
+
 int thread_exit(){
     callOperation(0x12);
     return 1;
 }
+
 void thread_join(thread_t handle){
     __asm__ volatile("mv a1, %0" : : "r"(handle));
     callOperation(0x14);
