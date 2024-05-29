@@ -3,7 +3,6 @@
 
 #include "../lib/hw.h"
 
-
 struct memblock {
     size_t size;
     memblock* prev;
@@ -24,4 +23,4 @@ private:
     static memblock* allocatedHead;
 
 };
-#endif // MEMORY_ALLOCATOR_HPP
+#endif

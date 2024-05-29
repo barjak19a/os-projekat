@@ -1,9 +1,5 @@
-//
-// Created by os on 8/18/23.
-//
-
-#ifndef PROJECT_BASE_V1_1_PRINTING_H
-#define PROJECT_BASE_V1_1_PRINTING_H
+#ifndef _PRINTING_HPP_
+#define _PRINTING_HPP_
 
 #include "../h/syscall_c.hpp"
 
@@ -19,4 +15,5 @@ int stringToInt(const char *s);
 
 void printInt(int xx, int base=10, int sgn=0);
 
-#endif //PROJECT_BASE_V1_1_PRINTING_H
+#endif // _PRINTING_HPP_
+

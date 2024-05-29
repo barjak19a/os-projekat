@@ -1,83 +1,80 @@
-//
-// Created by os on 8/20/23.
-//
-
 #include "../h/syscall_c.hpp"
-#include "../lib/console.h"
-#include "../h/_thread.hpp"
 
-void callOperation(uint64 operationCode){
-    __asm__ volatile ("mv a0, %0" : : "r" (operationCode));
+
+void ecall(uint64 code, uint64 argument1 = 0, uint64 argument2 = 0, uint64 argument3 = 0, uint64 argument4 = 0) {
     __asm__ volatile ("ecall");
 }
 
-//uint64 ret(){
-//    uint64 volatile ret_val;
-//    __asm__ volatile ("mv %0, a0":"=r"(ret_val));
-//    return  ret_val;
-//}
-
-void* mem_alloc(size_t size){
-    __asm__ volatile("mv a1, %0": : "r"(size));
-    callOperation(0x1);
-//    return (void*)ret();
-    void* ret;
+void *mem_alloc(uint64 size) {
+    ecall(MEM_ALLOC, size);
+    void *ret;
     __asm__ volatile("mv %0, a0" : "=r" (ret));
 
     return ret;
 }
 
-int mem_free(void* adr){
-    __asm__ volatile("mv a1, %0": : "r"(adr));
-    callOperation(0x2);
+int mem_free(void *adr) {
+    ecall(MEM_FREE, (uint64) adr);
     return 1;
 }
 
-char getc(){
-    callOperation(0x41);
+int thread_create(thread_t *handle, void(*start_routine)(void *), void *arg) {
+    void* stack = 0;
+    if (start_routine != nullptr) {
+        stack = mem_alloc(DEFAULT_STACK_SIZE);
+    }
+    ecall(THREAD_CREATE, (uint64) handle, (uint64) start_routine, (uint64) arg, (uint64) stack);
+    return 1;
+}
+
+void thread_exit() {
+    ecall(THREAD_EXIT);
+}
+
+void thread_dispatch() {
+    ecall(THREAD_DISPATCH);
+}
+
+void thread_join(thread_t id) {
+    ecall(THREAD_JOIN, (uint64) id);
+}
+
+int sem_open(sem_t *handle, unsigned init) {
+    ecall(SEM_OPEN, (uint64) handle, (uint64) init);
+    return 1;
+}
+
+int sem_close(sem_t handle) {
+    ecall(SEM_CLOSE, (uint64) handle);
+    return 1;
+}
+
+int sem_wait(sem_t handle) {
+    ecall(SEM_WAIT, (uint64) handle);
+    return 1;
+}
+
+int sem_signal(sem_t handle) {
+    ecall(SEM_SIGNAL, (uint64) handle);
+    return 1;
+}
+
+int sem_trywait(sem_t handle) {
+    ecall(SEM_TRYWAIT, (uint64) handle);
+    return 1;
+}
+
+int time_sleep(time_t time) {
+    return 0;
+}
+
+char getc() {
+    ecall(GETC);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (char)ret;
+    return (char) ret;
 }
 
-void putc(char c){
-    __asm__ volatile("mv a1,%0": : "r"(c));
-    callOperation(0x42);
+void putc(char c) {
+    ecall(PUTC, (uint64) c);
 }
-
-int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg){
-    size_t argument1;
-    size_t argument2;
-    size_t argument3;
-
-    __asm__ volatile("mv %0, a0" : "=r" (argument1));
-    __asm__ volatile("mv %0, a1" : "=r" (argument2));
-    __asm__ volatile("mv %0, a2" : "=r" (argument3));
-    void* stackSpace = mem_alloc(DEFAULT_STACK_SIZE);
-    __asm__ volatile("mv a1, %0" : : "r" ((thread_t*)argument1));
-    __asm__ volatile("mv a2, %0" : : "r" ((_thread::Body)argument2));
-    __asm__ volatile("mv t0, %0" : : "r" ((void*)argument3));
-    __asm__ volatile("mv t1, %0" : : "r" (stackSpace));
-
-    /*__asm__ volatile ("mv a1, %0": : "r"(&handle));
-    __asm__ volatile ("mv a2, %0": : "r"(start_routine));
-    __asm__ volatile ("mv a3, %0": : "r"(arg));*/
-    callOperation(0x11);
-    return 1;
-}
-
-void thread_dispatch(){
-    callOperation(0x13);
-}
-
-int thread_exit(){
-    callOperation(0x12);
-    return 1;
-}
-
-void thread_join(thread_t handle){
-    __asm__ volatile("mv a1, %0" : : "r"(handle));
-    callOperation(0x14);
-}
-
-

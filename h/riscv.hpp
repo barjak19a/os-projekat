@@ -1,7 +1,3 @@
-//
-// Created by os on 8/20/23.
-//
-
 #ifndef PROJECT_BASE_V1_1_RISCV_HPP
 #define PROJECT_BASE_V1_1_RISCV_HPP
 #include "../lib/hw.h"
@@ -9,6 +5,8 @@
 
 class riscv {
 public:
+    static void pop();
+    static void push();
     // pop sstatus.spp and sstatus.spie bits (has to be a non inline function)
     static void popSppSpie();
 
@@ -182,4 +180,4 @@ inline void riscv::w_sstatus(uint64 sstatus)
 
 
 
-#endif //PROJECT_BASE_V1_1_RISCV_HPP
+#endif
