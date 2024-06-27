@@ -50,6 +50,9 @@ void riscv::handleSupervisorTrap() {
                 break;
             case THREAD_JOIN:
                 ((_thread *) argument1)->thread_join();
+            case THREAD_ID:
+                _thread::running->getId();
+                break;
             case SEM_OPEN:
                 _sem::sem_open((_sem **) argument1, static_cast<int>(argument2));
                 break;
@@ -71,9 +74,18 @@ void riscv::handleSupervisorTrap() {
             case PUTC:
                 __putc((char) argument1);
                 break;
+            case JOIN_ALL:
+                _thread::joinAll();
+                break;
         }
     } else if (scause == TIMER) {
+        static int time = 0;
         mc_sip(SIP_SSIE);
+        time += 1;
+        if (time >= 2) {
+            time = 0;
+            _thread::thread_dispatch();
+        }
     } else if (scause == CONSOLE) {
         console_handler();
     } else if (scause == ILLEGAL_INSTRUCTION) {

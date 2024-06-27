@@ -17,11 +17,15 @@ public:
     };
     using Body = void (*)(void *);
 
+    //_thread(Body, void*args, void*stack_space);
+
     State getState() { return state; }
 
     void setState(State state) { this->state = state; }
 
     void thread_join();
+
+    int getId();
 
     static _thread *running;
 
@@ -35,8 +39,20 @@ public:
 
     static void contextSwitch(Context *current, Context *next);
 
+    static void SetMaximumThreads(int num_of_threads = 5);
+
+    static _sem* max_threads;
+
+    void add_child(_thread *child) {
+        children[pointer++] = child;
+    }
+
+    static void joinAll();
+
+
 private:
     _thread(Body body, void *args, void *stackSpace);
+    static int idCounter;
 
     Body body;
     Context context;
@@ -45,6 +61,9 @@ private:
     void *args;
     State state;
     _sem *joinSem;
+    int id;
+    _thread* children[1000];
+    int pointer = 0;
 };
 
 #endif

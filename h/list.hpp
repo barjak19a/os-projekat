@@ -6,7 +6,7 @@ class _thread;
 template<typename T>
 class List {
 private:
-    static int constexpr DEFAULT_SIZE = 50;
+    static int constexpr DEFAULT_SIZE = 1000;
     int front;
     int back;
     T* elements[DEFAULT_SIZE];

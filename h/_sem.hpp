@@ -20,7 +20,7 @@ public:
     int trywait();
 
 private:
-    static int constexpr DEFAULT_SIZE = 50;
+    static int constexpr DEFAULT_SIZE = 500;
     int count;
     thread_t waiting[DEFAULT_SIZE];
     int front;

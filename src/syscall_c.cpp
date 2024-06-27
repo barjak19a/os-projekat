@@ -9,7 +9,6 @@ void *mem_alloc(uint64 size) {
     ecall(MEM_ALLOC, size);
     void *ret;
     __asm__ volatile("mv %0, a0" : "=r" (ret));
-
     return ret;
 }
 
@@ -37,6 +36,14 @@ void thread_dispatch() {
 
 void thread_join(thread_t id) {
     ecall(THREAD_JOIN, (uint64) id);
+}
+
+int get_thread_id() {
+    uint64 volatile ret;
+    thread_dispatch();
+    ecall(THREAD_ID);
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (int) ret;
 }
 
 int sem_open(sem_t *handle, unsigned init) {
@@ -77,4 +84,8 @@ char getc() {
 
 void putc(char c) {
     ecall(PUTC, (uint64) c);
+}
+
+void joinAll() {
+    ecall(JOIN_ALL);
 }

@@ -14,13 +14,15 @@ enum Syscalls {
     THREAD_EXIT = 0x12,
     THREAD_DISPATCH = 0x13,
     THREAD_JOIN = 0x14,
+    THREAD_ID = 0x15,
     SEM_OPEN = 0x21,
     SEM_CLOSE = 0x22,
     SEM_WAIT = 0x23,
     SEM_SIGNAL = 0x24,
     SEM_TRYWAIT = 0x26,
     GETC = 0x41,
-    PUTC = 0x42
+    PUTC = 0x42,
+    JOIN_ALL = 0x50
 };
 
 class _thread;
@@ -43,6 +45,8 @@ void thread_exit();
 
 void thread_join(thread_t id);
 
+int get_thread_id();
+
 class _sem;
 
 typedef _sem *sem_t;
@@ -58,5 +62,7 @@ int sem_signal (sem_t id);
 int sem_trywait(sem_t id);
 
 int time_sleep(time_t time);
+
+void joinAll();
 
 #endif //PROJECT_BASE_V1_1_SYSCALL_C_H

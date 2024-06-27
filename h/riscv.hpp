@@ -40,6 +40,10 @@ public:
     // write register stval
     static void w_stval(uint64 stval);
 
+    static int setjump();
+
+    static int longjump();
+
     enum BitMaskSip
     {
         SIP_SSIE = (1 << 1),

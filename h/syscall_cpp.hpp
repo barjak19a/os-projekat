@@ -19,6 +19,10 @@ public:
 
     static int sleep(time_t);
 
+    static void joinAll() {
+        ::joinAll();
+    }
+
 protected:
     Thread();
 
